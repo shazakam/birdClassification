@@ -10,11 +10,15 @@ import torchvision.transforms as transforms
 
 class BirdImageDataset(Dataset):
     
-    def __init__(self, annotations_file):
+    def __init__(self, annotations_file, train):
         target_size = (224, 224)
         def change_path(filepath):
             els = filepath.split('/')
-            els[1] = 'PARAKETT  AUKLET'
+            
+            if train:
+                els[1] = 'PARAKETT  AUKLET'
+            else:
+                els[1] = 'PARAKETT AUKLET'
             return os.path.join(*els)
     
         self.img_labels = pd.read_csv(annotations_file)
@@ -29,7 +33,7 @@ class BirdImageDataset(Dataset):
         return self.img_labels.shape[0]
 
     def __getitem__(self, idx):
-        img_path = self.img_labels['filepaths'].iloc[idx]
+        img_path = '100-bird-species/'+self.img_labels['filepaths'].iloc[idx]
         image = read_image(img_path)/255
         image = self.transform(image)
         label = torch.zeros(525)
