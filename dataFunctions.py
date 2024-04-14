@@ -6,7 +6,7 @@ import os
 from torchvision import transforms
 import torchvision.transforms as transforms
 
-
+from torchvision.models import ResNet34_Weights
 
 class BirdImageDataset(Dataset):
     
@@ -22,9 +22,12 @@ class BirdImageDataset(Dataset):
             return os.path.join(*els)
     
         self.img_labels = pd.read_csv(annotations_file)
-        self.transform = transforms.Compose([
-                transforms.Resize(target_size)
-            ])
+        # self.transform = transforms.Compose([
+        #         transforms.Resize(target_size)
+        #     ])
+
+        self.weights = ResNet34_Weights.DEFAULT
+        self.preprocess = self.weights.transforms()
         self.img_labels.loc[self.img_labels['labels'] == 'PARAKETT  AKULET', 'filepaths'] =  self.img_labels.loc[self.img_labels['labels'] == 'PARAKETT  AKULET', 'filepaths'].map(change_path)
         
         
@@ -34,8 +37,9 @@ class BirdImageDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = '100-bird-species/'+self.img_labels['filepaths'].iloc[idx]
-        image = read_image(img_path)/255
-        image = self.transform(image)
+        # image = read_image(img_path)/255
+        # image = self.transform(image)
+        image = self.preprocess(read_image(img_path))
         label = torch.zeros(525)
         label[int(self.img_labels['class id'].iloc[idx])] = 1
         return image, label
