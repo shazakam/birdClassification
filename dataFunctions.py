@@ -35,6 +35,15 @@ class BirdImageDataset(Dataset):
     def __len__(self):
         return self.img_labels.shape[0]
 
+    def __get__unprocessed_item__(self, idx):
+        img_path = '100-bird-species/'+self.img_labels['filepaths'].iloc[idx]
+        image = read_image(img_path)/255
+        # image = self.transform(image)
+        # image = self.preprocess(read_image(img_path))
+        label = torch.zeros(525)
+        label[int(self.img_labels['class id'].iloc[idx])] = 1
+        return image, label
+
     def __getitem__(self, idx):
         img_path = '100-bird-species/'+self.img_labels['filepaths'].iloc[idx]
         # image = read_image(img_path)/255
