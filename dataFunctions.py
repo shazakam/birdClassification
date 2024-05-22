@@ -52,3 +52,10 @@ class BirdImageDataset(Dataset):
         label = torch.zeros(525)
         label[int(self.img_labels['class id'].iloc[idx])] = 1
         return image, label
+
+    def __get_image_from_species__(self, species_label):
+        first_elem = self.img_labels[self.img_labels['labels'] == species_label]['filepaths'].iloc[0]
+        img_path = '100-bird-species/'+first_elem
+        image = read_image(img_path)/255
+
+        return image
